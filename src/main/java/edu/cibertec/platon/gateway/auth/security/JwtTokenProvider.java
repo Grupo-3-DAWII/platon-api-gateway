@@ -52,6 +52,10 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public Long getUserId(String token) {
+        return parseClaims(token).get("idUser", Long.class);
+    }
+
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), token, Collections.emptyList());
