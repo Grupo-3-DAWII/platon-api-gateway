@@ -34,6 +34,8 @@ public class SecurityConfig {
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .pathMatchers(HttpMethod.POST, "/api/v1/login").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/api/accounts/register").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/products/catalog", "/api/products/catalog/{id:[0-9]+}").permitAll()
                         .anyExchange().authenticated())
                 .build();
     }

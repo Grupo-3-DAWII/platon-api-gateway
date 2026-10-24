@@ -22,6 +22,7 @@ public class JwtAuthenticationFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        exchange = exchange.mutate().request(request -> request.headers(headers -> headers.remove("X-Platon-User-Id"))).build();
         String authorization = exchange.getRequest().getHeaders().getFirst("Authorization");
         if (authorization == null || !authorization.startsWith(BEARER_PREFIX)) {
             return chain.filter(exchange);
@@ -33,7 +34,10 @@ public class JwtAuthenticationFilter implements WebFilter {
         }
 
         Authentication authentication = jwtTokenProvider.getAuthentication(token);
-        return chain.filter(exchange)
+        Long userId = jwtTokenProvider.getUserId(token);
+        ServerWebExchange identified = exchange.mutate().request(request -> request.headers(headers ->
+                headers.set("X-Platon-User-Id", String.valueOf(userId)))).build();
+        return chain.filter(identified)
                 .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(
                         Mono.just(new SecurityContextImpl(authentication))
                 ));
