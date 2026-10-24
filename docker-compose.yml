@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    container_name: platon-api-gateway
+    restart: unless-stopped
+    environment:
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL:-http://host.docker.internal:8888}
+      EUREKA_SERVER_URL: http://host.docker.internal:8761/eureka/
+      PRODUCTS_SERVICE_URL: http://host.docker.internal:8081
+      PAYMENTS_SERVICE_URL: http://host.docker.internal:8082
+      DB_R2DBC_URL: r2dbc:postgresql://host.docker.internal:5432/account_db
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8080:8080"
